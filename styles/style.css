@@ -1,12 +1,14 @@
 .main {
     position: relative;
 }
+
 .building {
     display: flex;
     flex-direction: column;
     width: 100px;
 }
-.floor{
+
+.floor {
     height: 110px;
     width: 300px;
     display: flex;
@@ -14,6 +16,7 @@
     align-items: center;
     position: relative;
 }
+
 .floor:not(:first-child)::after {
     content: ' ';
     height: 7px;
@@ -23,12 +26,15 @@
     position: absolute;
     top: 0;
 }
+
 .btn {
     cursor: pointer;
 }
-.queue .btn{
+
+.queue .btn {
     color: green;
 }
+
 .seconds {
     display: none;
     font-size: 35px;
@@ -40,14 +46,17 @@
     width: 60px;
     text-align: right;
 }
+
 .queue .seconds {
     display: block;
 }
+
 .elevator-shaft {
     position: absolute;
     left: 300px;
     bottom: 0;
 }
+
 .elevator {
     height: 110px;
     width: 100px;
