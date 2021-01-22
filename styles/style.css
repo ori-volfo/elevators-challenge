@@ -1,8 +1,12 @@
-.main {
+#main {
     position: relative;
+    display: flex;
 }
-
-.building {
+.building{
+    position: relative;
+    flex-grow: 1;
+}
+.floors {
     display: flex;
     flex-direction: column;
     width: 100px;

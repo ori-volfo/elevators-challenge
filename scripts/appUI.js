@@ -32,7 +32,7 @@ var AppUI = (function () {
         for (let i = floors; i >= 0; i--) {
             floorsHTML += `<div id="floor-${i}" class="floor"><div class="seconds"></div><button class="metal linear btn" value="${i}">${i}</button></div>`;
         }
-        document.getElementById('building').innerHTML = floorsHTML;
+        document.getElementById('floors').innerHTML = floorsHTML;
     }
 
     /**

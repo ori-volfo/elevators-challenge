@@ -19,7 +19,7 @@ var App = (function () {
 
     function attachEvents() {
         // Using event delegation by attaching a single event handler
-        document.getElementById('building').addEventListener('click', function (e) {
+        document.querySelector('.building .floors').addEventListener('click', function (e) {
             const requestFloor = +e.target.value; // Cast to integer if possible
             Number.isInteger(requestFloor) && callElevator(requestFloor);
         })
