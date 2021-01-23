@@ -1,12 +1,8 @@
 var AppUI = (function () {
     'use strict';
 
-    // let elevatorsLocation = []; // Array elevators current location
-
     function init() {
-
         renderBuildings(Config.BUILDINGS);
-
     }
 
     /**
@@ -25,9 +21,9 @@ var AppUI = (function () {
     }
 
     /**
-     * Add th elevatosr HTML
-     * @param floors
-     * @param buildNum
+     * Add the floors HTML
+     * @param {number} floors
+     * @param {number} buildNum
      * @return {string}
      */
     function renderFloors(floors ,buildNum){
@@ -46,9 +42,6 @@ var AppUI = (function () {
 
         let buildingsHTML = '';
         buildings.forEach(function (building,i){
-            // elevatorsLocation[i].length = building.floors;
-            // elevatorsLocation[i].fill(0);
-
             buildingsHTML += `<div id="building-${i}" class="building">`;
             buildingsHTML += renderFloors(building.floors, i);
             buildingsHTML += renderElevators(building.elevators, i);
@@ -58,7 +51,7 @@ var AppUI = (function () {
     }
 
     /**
-     * Move given elevator to given floor
+     * Move given elevator of a specific building to a given floor
      * @param {number} building
      * @param {number} elevatorNum
      * @param {object} destination
@@ -69,7 +62,6 @@ var AppUI = (function () {
 
         elevator.style.transition = `all ${time}ms ease-in-out 500ms`;
         elevator.style.bottom = `${floor * Config.FLOOR_HEIGHT}px`;
-        // elevatorsLocation[elevatorNum] = floor;
     }
 
     /**
@@ -96,6 +88,10 @@ var AppUI = (function () {
         }, 500);
     }
 
+    /**
+     * @param {number} num
+     * @return {number}
+     */
     function roundHalf(num) {
         return Math.round(num * 2) / 2;
     }

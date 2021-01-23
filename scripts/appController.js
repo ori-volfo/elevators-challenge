@@ -1,18 +1,10 @@
-var App = (function () {
+var AppController = (function () {
     'use strict';
 
     let elevators = []; // An array of Elevator objects
-    let queuedFloors = []; // An array that lists the floors that have elevators queued or waiting
+    let queuedFloors = []; // An array that lists the floors that have parking elevators or queued
 
     function init() {
-
-        // queuedFloors.length = Config.FLOORS_COUNT + 1;
-        // queuedFloors.fill(0);
-        // queuedFloors[0] = Config.ELEVATORS_COUNT;
-
-        // for (let i = 0; i < Config.ELEVATORS_COUNT; i++) {
-        //     elevators.push(new Elevator(0));
-        // }
 
         initFloorsMapping(Config.BUILDINGS);
         createElevators(Config.BUILDINGS);
@@ -21,6 +13,10 @@ var App = (function () {
         attachEvents(Config.BUILDINGS);
     }
 
+    /**
+     * Fills the multi-dimensional array 'queuedFloors' according to the 'buildings' array
+     * @param {object[]} buildings
+     */
     function initFloorsMapping(buildings){
         buildings.forEach(function (building,i){
             queuedFloors[i] = [];
@@ -30,6 +26,10 @@ var App = (function () {
         });
     }
 
+    /**
+     * Create Elevator instances
+     * @param {object[]} buildings
+     */
     function createElevators(buildings){
         buildings.forEach(function (building,i){
             elevators[i] = [];
@@ -39,13 +39,12 @@ var App = (function () {
         });
     }
 
+    /**
+     *
+     * @param {object[]}buildings
+     */
     function attachEvents(buildings) {
-        // Using event delegation by attaching a single event handler
-        // document.querySelector('.building .floors').addEventListener('click', function (e) {
-        //     const requestFloor = +e.target.value; // Cast to integer if possible
-        //     Number.isInteger(requestFloor) && callElevator(requestFloor);
-        // })
-        buildings.forEach(function(building,i) {
+        buildings.forEach(function(buildingObj,i) {
             // Using event delegation by attaching a single event handler
             document.getElementById('floors-'+i).addEventListener('click', function (e) {
                 if(e.target.classList.contains('btn')){
@@ -136,5 +135,5 @@ var App = (function () {
 
 
 window.addEventListener('load', function () {
-    App.init();
+    AppController.init();
 });
