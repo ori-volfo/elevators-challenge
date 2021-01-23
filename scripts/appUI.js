@@ -1,62 +1,86 @@
 var AppUI = (function () {
     'use strict';
 
-    let elevatorsLocation = []; // Array elevators current location
+    // let elevatorsLocation = []; // Array elevators current location
 
     function init() {
 
-        elevatorsLocation.length = Config.ELEVATORS_COUNT;
-        elevatorsLocation.fill(0);
-        renderElevators(Config.ELEVATORS_COUNT);
-        renderBuilding(Config.FLOORS_COUNT)
+        renderBuildings(Config.BUILDINGS);
+
     }
 
     /**
      * Add the elevators HTML
      * @param {number} elevators
+     * @param {number} buildNum
+     * @return {string}
      */
-    function renderElevators(elevators) {
-        let elevatorsHTML = '';
+    function renderElevators(elevators,buildNum) {
+        let elevatorsHTML = `<div id="elevator-shaft-${buildNum}" class="elevator-shaft">`;
         for (let i = 0; i < elevators; i++) {
-            elevatorsHTML += `<div id="elevator-${i}" class="elevator"></div>`;
+            elevatorsHTML += `<div id="elevator-${buildNum}-${i}" class="elevator"></div>`;
         }
-        document.getElementById('elevator-shaft').innerHTML = elevatorsHTML;
+        elevatorsHTML += '</div>';
+        return elevatorsHTML;
     }
 
     /**
-     * Add the floors HTML
-     * @param {number} floors
+     * Add th elevatosr HTML
+     * @param floors
+     * @param buildNum
+     * @return {string}
      */
-    function renderBuilding(floors) {
-        let floorsHTML = '';
+    function renderFloors(floors ,buildNum){
+        let floorsHTML = `<div id="floors-${buildNum}" class="floors">`;
         for (let i = floors; i >= 0; i--) {
-            floorsHTML += `<div id="floor-${i}" class="floor"><div class="seconds"></div><button class="metal linear btn" value="${i}">${i}</button></div>`;
+            floorsHTML += `<div id="floor-${buildNum}-${i}" class="floor"><div class="seconds"></div><button class="metal linear btn" value="${buildNum}-${i}">${i}</button></div>`;
         }
-        document.getElementById('floors').innerHTML = floorsHTML;
+        floorsHTML += '</div>';
+        return floorsHTML;
+    }
+    /**
+     * Add the buildings HTML
+     * @param {object[]} buildings
+     */
+    function renderBuildings(buildings) {
+
+        let buildingsHTML = '';
+        buildings.forEach(function (building,i){
+            // elevatorsLocation[i].length = building.floors;
+            // elevatorsLocation[i].fill(0);
+
+            buildingsHTML += `<div id="building-${i}" class="building">`;
+            buildingsHTML += renderFloors(building.floors, i);
+            buildingsHTML += renderElevators(building.elevators, i);
+            buildingsHTML += '</div>';
+        });
+        document.getElementById('main').innerHTML = buildingsHTML;
     }
 
     /**
      * Move given elevator to given floor
+     * @param {number} building
      * @param {number} elevatorNum
      * @param {object} destination
      */
-    function changeFloorUI(elevatorNum, {floor, arrivalTime}) {
-        const elevator = document.getElementById(`elevator-${elevatorNum}`)
+    function changeFloorUI(building, elevatorNum, {floor, arrivalTime}) {
+        const elevator = document.getElementById(`elevator-${building}-${elevatorNum}`)
         const time = arrivalTime - Date.now();
 
         elevator.style.transition = `all ${time}ms ease-in-out 500ms`;
         elevator.style.bottom = `${floor * Config.FLOOR_HEIGHT}px`;
-        elevatorsLocation[elevatorNum] = floor;
+        // elevatorsLocation[elevatorNum] = floor;
     }
 
     /**
      * Timer UI functionality
-     * @param {number} floorNum - floor number of ordered elevator
+     * @param {number} building - building number of ordered elevator
+     * @param {number} floor - floor number of ordered elevator
      * @param {number} seconds - time left to elevator's arrival
      */
-    function initElevatorTimer(floorNum, seconds) {
+    function initElevatorTimer( building, floor, seconds ) {
         seconds = roundHalf(seconds);
-        const floorElem = document.getElementById(`floor-${floorNum}`);
+        const floorElem = document.getElementById(`floor-${building}-${floor}`);
 
         floorElem.classList.add('queue');
         floorElem.querySelector('.seconds').innerHTML = seconds.toFixed(1);

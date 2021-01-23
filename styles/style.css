@@ -1,6 +1,7 @@
 #main {
     position: relative;
     display: flex;
+    align-items: flex-end;
 }
 .building{
     position: relative;

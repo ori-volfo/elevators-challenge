@@ -1,6 +1,7 @@
 const Config = {
-    ELEVATORS_COUNT: 3, // The amount of elevators
-    FLOORS_COUNT: 9,  // The amount of floors
+    BUILDINGS: [{floors:9,elevators:3},{floors:5,elevators:2}], // An array of buildings. Each building object holds the number of floors and elevators.
+    ELEVATORS_COUNT: 2, // The amount of elevators
+    FLOORS_COUNT: 4,  // The amount of floors
 
     TRAVEL_TIME: 500, // The amount of time it takes to travel a floor, in milliseconds
     ARRIVAL_WAITING_TIME: 2000, // The amount of time the elevator waits at arrival, in milliseconds

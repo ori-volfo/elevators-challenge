@@ -6,34 +6,66 @@ var App = (function () {
 
     function init() {
 
-        queuedFloors.length = Config.FLOORS_COUNT + 1;
-        queuedFloors.fill(0);
-        queuedFloors[0] = Config.ELEVATORS_COUNT;
+        // queuedFloors.length = Config.FLOORS_COUNT + 1;
+        // queuedFloors.fill(0);
+        // queuedFloors[0] = Config.ELEVATORS_COUNT;
 
-        for (let i = 0; i < Config.ELEVATORS_COUNT; i++) {
-            elevators.push(new Elevator(0));
-        }
+        // for (let i = 0; i < Config.ELEVATORS_COUNT; i++) {
+        //     elevators.push(new Elevator(0));
+        // }
+
+        initFloorsMapping(Config.BUILDINGS);
+        createElevators(Config.BUILDINGS);
+
         AppUI.init();
-        attachEvents();
+        attachEvents(Config.BUILDINGS);
     }
 
-    function attachEvents() {
+    function initFloorsMapping(buildings){
+        buildings.forEach(function (building,i){
+            queuedFloors[i] = [];
+            queuedFloors[i].length = building.floors + 1;
+            queuedFloors[i].fill(0);
+            queuedFloors[i][0] = building.elevators;
+        });
+    }
+
+    function createElevators(buildings){
+        buildings.forEach(function (building,i){
+            elevators[i] = [];
+            for(let j = 0; j < building.elevators; j++) {
+                elevators[i].push(new Elevator(0));
+            }
+        });
+    }
+
+    function attachEvents(buildings) {
         // Using event delegation by attaching a single event handler
-        document.querySelector('.building .floors').addEventListener('click', function (e) {
-            const requestFloor = +e.target.value; // Cast to integer if possible
-            Number.isInteger(requestFloor) && callElevator(requestFloor);
-        })
+        // document.querySelector('.building .floors').addEventListener('click', function (e) {
+        //     const requestFloor = +e.target.value; // Cast to integer if possible
+        //     Number.isInteger(requestFloor) && callElevator(requestFloor);
+        // })
+        buildings.forEach(function(building,i) {
+            // Using event delegation by attaching a single event handler
+            document.getElementById('floors-'+i).addEventListener('click', function (e) {
+                if(e.target.classList.contains('btn')){
+                    const [building, requestFloor] = e.target.value.split('-'); // Cast to integer if possible
+                    callElevator(+building, +requestFloor);
+                }
+            })
+        });
     }
 
     /**
      * Gets destination floor and returns the Elevator index with the closest arrival time
+     * @param {number} building
      * @param {number} requestFloor
      * @returns {number}
      */
-    function findElevator(requestFloor) {
+    function findElevator( building,requestFloor) {
 
         let timeEstimations = [];
-        elevators.forEach(function (elevator, i) { // Estimate arrival for each elevator
+        elevators[building].forEach(function (elevator, i) { // Estimate arrival for each elevator
             timeEstimations[i] = elevator.estimateArrivalTime(requestFloor);
         });
         return timeEstimations.indexOf(Math.min(...timeEstimations));
@@ -42,39 +74,38 @@ var App = (function () {
 
     /**
      * Main logic controller
+     * @param {number} building
      * @param {number} requestFloor
      */
-    function callElevator(requestFloor) {
-
-        if (queuedFloors[requestFloor] > 0) { // ignore requests for queued floors
+    function callElevator( building,requestFloor) {
+        if (queuedFloors[building][requestFloor] > 0) { // ignore requests for queued floors
             return;
         }
+        const elevatorIndex = findElevator( building, requestFloor ); // Find best candidate
+        const arrivalTime = elevators[building][elevatorIndex].addToQueue(requestFloor); // Queue requested floor for best elevator
 
-        const elevatorIndex = findElevator(requestFloor); // Find best candidate
-        const arrivalTime = elevators[elevatorIndex].addToQueue(requestFloor); // Queue requested floor for best elevator
+        queuedFloors[building][requestFloor]++;
+        AppUI.initElevatorTimer( building, requestFloor, (arrivalTime - Date.now()) / 1000);
 
-        queuedFloors[requestFloor]++;
-
-        AppUI.initElevatorTimer(requestFloor, (arrivalTime - Date.now()) / 1000);
-
-        if (!elevators[elevatorIndex].isMoving) { // If elevator is standing still, start journey
-            sendElevator(elevators[elevatorIndex]);
+        if (!elevators[building][elevatorIndex].isMoving) { // If elevator is standing still, start journey
+            sendElevator( building, elevators[building][elevatorIndex]);
         }
     }
 
     /**
      * Iterate Elevator queue and play UI + sound
+     * @param {number} building
      * @param {Elevator} elevator
      * @return {void}
      */
-    async function sendElevator(elevator) {
+    async function sendElevator( building, elevator) {
         const now = Date.now();
         const destination = elevator.queue[0];
 
         elevator.isMoving = true;
-        queuedFloors[elevator.floor]--;
+        queuedFloors[building][elevator.floor]--;
 
-        AppUI.changeFloorUI(elevators.indexOf(elevator), destination);
+        AppUI.changeFloorUI( building, elevators[building].indexOf(elevator), destination);
         await timeout(destination.arrivalTime - now); // Wait for animation to end
 
         elevator.floor = destination.floor; // Update current floor
@@ -86,7 +117,7 @@ var App = (function () {
         if (elevator.queue.length < 1) {
             elevator.isMoving = false;
         } else {
-            sendElevator(elevator);
+            sendElevator( building, elevator);
         }
     }
 
