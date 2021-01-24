@@ -103,16 +103,16 @@ var AppController = (function () {
 
         elevator.isMoving = true;
         queuedFloors[building][elevator.floor]--;
-
         AppUI.changeFloorUI( building, elevators[building].indexOf(elevator), destination);
+
         await timeout(destination.arrivalTime - now); // Wait for animation to end
 
         elevator.floor = destination.floor; // Update current floor
         ding.playSound();
 
         await timeout(Config.ARRIVAL_WAITING_TIME); // Elevator stall when reaching destination
-        elevator.queue.shift(); // Remove reached destination from queue LIFO
 
+        elevator.queue.shift(); // Remove reached destination from queue LIFO
         if (elevator.queue.length < 1) {
             elevator.isMoving = false;
         } else {
