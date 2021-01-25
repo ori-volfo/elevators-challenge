@@ -2,17 +2,27 @@ class Elevator {
     'use strict';
     isMoving = false;
 
-    constructor(_floor, _direction) {
-        this.floor = _floor;
-        this.queue = [];
+    constructor(_floor ) {
+        this.floor = _floor; // Current floor
+        this.queue = []; // An array of objects {floor,arrivalTime}
     }
 
+    /**
+     * Adds a destination floor to the elevator queue
+     * @param {number} requestFloor
+     * @return {Date}
+     */
     addToQueue(requestFloor) {
         let arrivalTime = this.estimateArrivalTime(requestFloor);
         this.queue.push({floor: requestFloor, arrivalTime});
         return arrivalTime;
     }
 
+    /**
+     * Returns the arrival time according to the destination
+     * @param {number} requestFloor
+     * @return {Date}
+     */
     estimateArrivalTime(requestFloor) {
         let estimatedTime;
 
@@ -27,6 +37,10 @@ class Elevator {
         return estimatedTime;
     }
 
+    /**
+     * returns the last floor and arrival time object
+     * @return {object}
+     */
     getLastQueueItem() {
         return this.queue[this.queue.length - 1]
     }
